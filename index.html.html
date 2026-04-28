@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Markets Knowledge Base</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0f1525;
+    --bg3: #141c30;
+    --card: #161e33;
+    --card-hover: #1c2640;
+    --border: #1e2d4a;
+    --accent: #00d4ff;
+    --accent2: #7b5af6;
+    --gold: #e8c840;
+    --text: #e4eaf7;
+    --text2: #8496b8;
+    --text3: #4d6080;
+    --danger: #ff4d6a;
+    --warn: #ffa040;
+    --success: #00cc88;
+    --sidebar-w: 280px;
+    --header-h: 62px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Noto Sans TC', 'Inter', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; font-size: 14px;
+  }
+  body.en { font-family: 'Inter', sans-serif; }
+
+  /* LANG TOGGLE */
+  .lang-toggle {
+    display: flex; align-items: center;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 20px; padding: 3px; gap: 2px; flex-shrink:0;
+  }
+  .lang-btn {
+    padding: 4px 12px; border-radius: 16px; font-size: 12px;
+    font-weight: 600; cursor: pointer; border: none;
+    background: transparent; color: var(--text3);
+    transition: all 0.2s; font-family: inherit;
+  }
+  .lang-btn.active {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: white;
+  }
+
+  /* hide/show lang content */
+  .zh { display: block; }
+  .en-text { display: none; }
+  body.en .zh { display: none; }
+  body.en .en-text { display: block; }
+  /* for inline spans */
+  span.zh { display: inline; }
+  span.en-text { display: none; }
+  body.en span.zh { display: none; }
+  body.en span.en-text { display: inline; }
+
+  /* HEADER */
+  header {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    height: var(--header-h);
+    background: rgba(10,14,26,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 20px; gap: 14px;
+  }
+  .logo { display:flex; align-items:center; gap:10px; white-space:nowrap; }
+  .logo-text { font-family:'Space Mono',monospace; font-size:16px; font-weight:700; color:#fff; letter-spacing:0.5px; }
+  .header-sub { font-size:11px; color:var(--text3); border-left:1px solid var(--border); padding-left:14px; line-height:1.5; }
+  .header-badge {
+    margin-left:auto; background:linear-gradient(135deg,var(--accent2),var(--accent));
+    color:white; font-size:11px; padding:4px 10px; border-radius:20px; font-weight:600; white-space:nowrap;
+  }
+  .search-wrap { position:relative; flex:1; max-width:340px; }
+  .search-wrap input {
+    width:100%; background:var(--bg3); border:1px solid var(--border);
+    color:var(--text); padding:7px 12px 7px 34px; border-radius:8px;
+    font-size:13px; outline:none; transition:border-color 0.2s; font-family:inherit;
+  }
+  .search-wrap input:focus { border-color:var(--accent); }
+  .search-wrap input::placeholder { color:var(--text3); }
+  .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--text3); font-size:13px; }
+
+  /* LAYOUT */
+  .layout { display:flex; padding-top:var(--header-h); min-height:100vh; }
+
+  /* SIDEBAR */
+  nav {
+    width:var(--sidebar-w); position:fixed; left:0; top:var(--header-h); bottom:0;
+    overflow-y:auto; background:var(--bg2); border-right:1px solid var(--border); padding:14px 0;
+  }
+  nav::-webkit-scrollbar { width:3px; }
+  nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .nav-section-label {
+    font-size:10px; font-weight:700; letter-spacing:1.2px; color:var(--text3);
+    text-transform:uppercase; padding:12px 18px 5px;
+  }
+  .nav-item {
+    display:flex; align-items:center; gap:9px; padding:9px 18px;
+    cursor:pointer; color:var(--text2); font-size:13px;
+    transition:all 0.15s; border-left:3px solid transparent; text-decoration:none;
+  }
+  .nav-item:hover { color:var(--text); background:var(--bg3); }
+  .nav-item.active { color:var(--accent); background:rgba(0,212,255,0.06); border-left-color:var(--accent); }
+  .nav-icon { width:15px; text-align:center; flex-shrink:0; }
+
+  /* MAIN */
+  main { margin-left:var(--sidebar-w); flex:1; padding:32px 40px; max-width:1100px; }
+
+  /* SECTION */
+  .section { display:none; }
+  .section.active { display:block; }
+  .section-title { font-family:'Space Mono',monospace; font-size:21px; font-weight:700; color:var(--text); margin-bottom:5px; }
+  .section-desc { color:var(--text2); font-size:13px; margin-bottom:26px; line-height:1.7; }
+
+  /* CARDS */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:14px; margin-bottom:24px; }
+  .card {
+    background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px;
+    transition:all 0.2s;
+  }
+  .card:hover { background:var(--card-hover); border-color:var(--accent2); transform:translateY(-1px); }
+  .card-icon { font-size:22px; margin-bottom:9px; }
+  .card-title { font-size:14px; font-weight:700; margin-bottom:5px; color:var(--text); }
+  .card-body { font-size:13px; color:var(--text2); line-height:1.7; }
+
+  /* INFO BLOCK */
+  .info-block { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:22px; margin-bottom:18px; }
+  .info-block h3 { font-size:14px; font-weight:700; color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+  .info-block p, .info-block li { font-size:13px; color:var(--text2); line-height:1.85; }
+  .info-block ul { list-style:none; }
+  .info-block ul li::before { content:"›"; color:var(--accent); margin-right:7px; }
+  .info-block ol { padding-left:18px; }
+
+  /* ALERT */
+  .alert { border-radius:10px; padding:13px 16px; margin-bottom:14px; font-size:13px; line-height:1.7; display:flex; gap:9px; align-items:flex-start; }
+  .alert-warn  { background:rgba(255,160,64,0.10); border:1px solid rgba(255,160,64,0.3); color:var(--warn); }
+  .alert-danger{ background:rgba(255,77,106,0.10); border:1px solid rgba(255,77,106,0.3); color:var(--danger); }
+  .alert-info  { background:rgba(0,212,255,0.08);  border:1px solid rgba(0,212,255,0.2);  color:var(--accent); }
+  .alert-success{background:rgba(0,204,136,0.08);  border:1px solid rgba(0,204,136,0.2);  color:var(--success);}
+  .alert-icon { flex-shrink:0; font-size:15px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x:auto; margin-bottom:18px; border-radius:10px; border:1px solid var(--border); }
+  table { width:100%; border-collapse:collapse; }
+  thead tr { background:var(--bg3); }
+  th { font-size:11px; font-weight:700; letter-spacing:0.8px; color:var(--text3); text-transform:uppercase; padding:11px 14px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+  td { padding:10px 14px; font-size:13px; color:var(--text2); border-bottom:1px solid var(--border); }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:rgba(255,255,255,0.02); color:var(--text); }
+  .hl  { color:var(--accent); font-family:'Space Mono',monospace; font-size:12px; }
+  .hl-gold { color:var(--gold); }
+  .hl-green{ color:var(--success); }
+
+  /* FAQ */
+  .faq-item { background:var(--card); border:1px solid var(--border); border-radius:10px; margin-bottom:9px; overflow:hidden; }
+  .faq-q { padding:14px 18px; cursor:pointer; font-size:14px; font-weight:500; color:var(--text); display:flex; justify-content:space-between; align-items:center; transition:background 0.15s; }
+  .faq-q:hover { background:var(--card-hover); }
+  .faq-toggle { color:var(--accent); font-size:18px; transition:transform 0.2s; flex-shrink:0; margin-left:12px; }
+  .faq-a { display:none; padding:14px 18px 16px; font-size:13px; color:var(--text2); line-height:1.85; border-top:1px solid var(--border); }
+  .faq-item.open .faq-a { display:block; }
+  .faq-item.open .faq-toggle { transform:rotate(45deg); }
+
+  /* BADGE */
+  .badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; }
+  .badge-blue  { background:rgba(0,212,255,0.15);    color:var(--accent); }
+  .badge-purple{ background:rgba(123,90,246,0.20);   color:var(--accent2); }
+  .badge-green { background:rgba(0,204,136,0.15);    color:var(--success); }
+  .badge-gold  { background:rgba(232,200,64,0.15);   color:var(--gold); }
+  .badge-red   { background:rgba(255,77,106,0.15);   color:var(--danger); }
+
+  .tag-row { display:flex; flex-wrap:wrap; gap:7px; margin:10px 0; }
+
+  /* GLOSSARY */
+  .glossary-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:11px; }
+  .glossary-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:15px 17px; }
+  .glossary-term { font-family:'Space Mono',monospace; font-size:13px; font-weight:700; color:var(--accent); margin-bottom:4px; }
+  .glossary-cn   { font-size:11px; color:var(--text3); margin-bottom:7px; }
+  .glossary-def  { font-size:13px; color:var(--text2); line-height:1.7; }
+
+  /* CONTACT */
+  .contact-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:11px; }
+  .contact-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:15px; display:flex; flex-direction:column; gap:5px; }
+  .contact-label { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:0.8px; }
+  .contact-value { font-size:13px; color:var(--accent); word-break:break-all; }
+
+  /* STEPS */
+  .steps { margin:14px 0; }
+  .step { display:flex; gap:12px; margin-bottom:12px; align-items:flex-start; }
+  .step-num { width:26px; height:26px; border-radius:50%; background:linear-gradient(135deg,var(--accent2),var(--accent)); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:white; flex-shrink:0; }
+  .step-content { padding-top:3px; }
+  .step-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+  .step-desc  { font-size:13px; color:var(--text2); line-height:1.6; }
+
+  .divider { height:1px; background:var(--border); margin:22px 0; }
+  h2.sub { font-size:15px; font-weight:700; color:var(--text); margin:22px 0 11px; padding-left:11px; border-left:3px solid var(--accent2); }
+
+  .section.active .card,
+  .section.active .info-block,
+  .section.active .faq-item { animation:fadeUp 0.3s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* MOBILE */
+  .menu-toggle { display:none; background:none; border:none; color:var(--text); font-size:22px; cursor:pointer; }
+  @media(max-width:768px){
+    .menu-toggle{display:block}
+    nav{transform:translateX(-100%);transition:transform 0.25s;z-index:99}
+    nav.open{transform:translateX(0)}
+    main{margin-left:0;padding:20px 16px}
+    .header-sub{display:none}
+    .card-grid{grid-template-columns:1fr}
+    .glossary-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <button class="menu-toggle" onclick="toggleNav()">☰</button>
+
+  <!-- LOGO -->
+  <div class="logo">
+    <svg width="38" height="38" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="24,2 20,16 28,16" fill="#E8C840"/>
+      <polygon points="24,46 20,32 28,32" fill="#ffffff" opacity="0.8"/>
+      <polygon points="2,24 16,20 16,28" fill="#ffffff" opacity="0.8"/>
+      <polygon points="46,24 32,20 32,28" fill="#ffffff" opacity="0.8"/>
+      <polygon points="24,13 31,19 29,27 24,30 19,27 17,19" fill="#ffffff"/>
+      <polygon points="24,13 31,19 24,20" fill="#cccccc" opacity="0.5"/>
+      <polygon points="17,19 24,20 19,27" fill="#aaaaaa" opacity="0.45"/>
+      <polygon points="24,20 31,19 29,27 24,30 19,27" fill="#e0e0e0" opacity="0.35"/>
+    </svg>
+    <span class="logo-text">MC Markets</span>
+  </div>
+
+  <div class="header-sub">
+    <span class="zh">客服知識庫 · CS Knowledge Base</span>
+    <span class="en-text">CS Knowledge Base · v3.2</span>
+    <br><span style="color:var(--text3);font-size:10px">v3.2 Internal Use Only</span>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput"
+      placeholder=""
+      data-zh="搜尋關鍵字..."
+      data-en="Search keywords..."
+      oninput="doSearch(this.value)">
+  </div>
+
+  <!-- LANG TOGGLE -->
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')">中文</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+  </div>
+
+  <div class="header-badge">
+    <span class="zh">內部使用</span>
+    <span class="en-text">Internal</span>
+  </div>
+</header>
+
+<div class="layout">
+
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
+<nav id="sidebar">
+  <div class="nav-section-label"><span class="zh">總覽</span><span class="en-text">Overview</span></div>
+  <a class="nav-item active" onclick="show('home')" href="#"><span class="nav-icon">🏠</span><span class="zh">平台總覽</span><span class="en-text">Overview</span></a>
+  <a class="nav-item" onclick="show('glossary')" href="#"><span class="nav-icon">📖</span><span class="zh">術語表</span><span class="en-text">Glossary</span></a>
+
+  <div class="nav-section-label"><span class="zh">帳戶</span><span class="en-text">Account</span></div>
+  <a class="nav-item" onclick="show('onboarding')" href="#"><span class="nav-icon">🚀</span><span class="zh">入門指南</span><span class="en-text">Onboarding</span></a>
+  <a class="nav-item" onclick="show('deposit')" href="#"><span class="nav-icon">💰</span><span class="zh">存款 / 提款</span><span class="en-text">Deposit / Withdraw</span></a>
+  <a class="nav-item" onclick="show('kyc')" href="#"><span class="nav-icon">🪪</span>KYC</a>
+  <a class="nav-item" onclick="show('security')" href="#"><span class="nav-icon">🔐</span><span class="zh">安全設置</span><span class="en-text">Security</span></a>
+
+  <div class="nav-section-label"><span class="zh">交易</span><span class="en-text">Trading</span></div>
+  <a class="nav-item" onclick="show('trading')" href="#"><span class="nav-icon">📊</span><span class="zh">交易指南</span><span class="en-text">Trading Guide</span></a>
+  <a class="nav-item" onclick="show('orders')" href="#"><span class="nav-icon">📋</span><span class="zh">訂單類型</span><span class="en-text">Order Types</span></a>
+  <a class="nav-item" onclick="show('margin')" href="#"><span class="nav-icon">⚖️</span><span class="zh">保證金 / 杠桿</span><span class="en-text">Margin / Leverage</span></a>
+  <a class="nav-item" onclick="show('fees')" href="#"><span class="nav-icon">💸</span><span class="zh">費用</span><span class="en-text">Fees</span></a>
+  <a class="nav-item" onclick="show('funding')" href="#"><span class="nav-icon">🔄</span><span class="zh">資金費率</span><span class="en-text">Funding Rate</span></a>
+
+  <div class="nav-section-label"><span class="zh">產品</span><span class="en-text">Products</span></div>
+  <a class="nav-item" onclick="show('vault')" href="#"><span class="nav-icon">🏦</span>MLP Vault</a>
+  <a class="nav-item" onclick="show('earn')" href="#"><span class="nav-icon">💎</span>Earn</a>
+  <a class="nav-item" onclick="show('swap')" href="#"><span class="nav-icon">⚡</span><span class="zh">閃兌 Swap</span><span class="en-text">Instant Swap</span></a>
+  <a class="nav-item" onclick="show('points')" href="#"><span class="nav-icon">🏆</span><span class="zh">積分系統</span><span class="en-text">Points System</span></a>
+
+  <div class="nav-section-label"><span class="zh">合規</span><span class="en-text">Compliance</span></div>
+  <a class="nav-item" onclick="show('safety')" href="#"><span class="nav-icon">🛡️</span><span class="zh">安全 / 儲備金</span><span class="en-text">Security & Reserves</span></a>
+  <a class="nav-item" onclick="show('compliance')" href="#"><span class="nav-icon">⚖️</span><span class="zh">合規 / 限制</span><span class="en-text">Compliance</span></a>
+
+  <div class="nav-section-label"><span class="zh">支援</span><span class="en-text">Support</span></div>
+  <a class="nav-item" onclick="show('faq')" href="#"><span class="nav-icon">❓</span>FAQ</a>
+  <a class="nav-item" onclick="show('contact')" href="#"><span class="nav-icon">📞</span><span class="zh">聯繫方式</span><span class="en-text">Contact</span></a>
+  <a class="nav-item" onclick="show('roadmap')" href="#"><span class="nav-icon">🗺️</span>Roadmap</a>
+</nav>
+
+<!-- ══════════════════ MAIN ══════════════════ -->
+<main>
+
+<!-- ─── HOME ─── -->
+<section class="section active" id="sec-home">
+  <div class="section-title"><span class="zh">歡迎使用 MC Markets 知識庫</span><span class="en-text">MC Markets Knowledge Base</span></div>
+  <div class="section-desc">
+    <span class="zh">專為客服團隊打造的內部參考平台。快速查詢產品規則、處理流程與常見問題。</span>
+    <span class="en-text">Internal reference platform built for the CS team. Quickly look up product rules, workflows, and FAQs.</span>
+  </div>
+
+  <div class="alert alert-info">
+    <span class="alert-icon">ℹ️</span>
+    <span>
+      <span class="zh">本知識庫基於 MC Markets 知識庫 V3.2，部分待確認項目使用時請留意。</span>
+      <span class="en-text">This knowledge base is based on MC Markets KB V3.2. Some items are pending confirmation — please verify before use.</span>
+    </span>
+  </div>
+
+  <div class="card-grid">
+    <div class="card" onclick="show('onboarding')" style="cursor:pointer">
+      <div class="card-icon">🚀</div>
+      <div class="card-title"><span class="zh">入門指南</span><span class="en-text">Onboarding</span></div>
+      <div class="card-body"><span class="zh">帳戶創建、錢包連接、2FA 設置、帳戶結構詳解</span><span class="en-text">Account creation, wallet connect, 2FA setup, account structure</span></div>
+    </div>
+    <div class="card" onclick="show('trading')" style="cursor:pointer">
+      <div class="card-icon">📊</div>
+      <div class="card-title"><span class="zh">交易指南</span><span class="en-text">Trading Guide</span></div>
+      <div class="card-body"><span class="zh">合約參數、現貨規則、訂單類型、成交機制</span><span class="en-text">Contract specs, spot rules, order types, execution mechanics</span></div>
+    </div>
+    <div class="card" onclick="show('fees')" style="cursor:pointer">
+      <div class="card-icon">💸</div>
+      <div class="card-title"><span class="zh">費用一覽</span><span class="en-text">Fee Schedule</span></div>
+      <div class="card-body"><span class="zh">合約費率、現貨費率、閃兌免費額度</span><span class="en-text">Contract fees, spot fees, swap free quota</span></div>
+    </div>
+    <div class="card" onclick="show('deposit')" style="cursor:pointer">
+      <div class="card-icon">💰</div>
+      <div class="card-title"><span class="zh">存提款流程</span><span class="en-text">Deposit & Withdrawal</span></div>
+      <div class="card-body"><span class="zh">支援幣種、到帳時間、費用、白名單管理</span><span class="en-text">Supported assets, timing, fees, whitelist management</span></div>
+    </div>
+    <div class="card" onclick="show('vault')" style="cursor:pointer">
+      <div class="card-icon">🏦</div>
+      <div class="card-title">MLP Vault</div>
+      <div class="card-body"><span class="zh">流動性機制、鎖定期、收益規則、風險提示</span><span class="en-text">Liquidity mechanism, lock-up, yield rules, risk notice</span></div>
+    </div>
+    <div class="card" onclick="show('faq')" style="cursor:pointer">
+      <div class="card-icon">❓</div>
+      <div class="card-title">FAQ</div>
+      <div class="card-body"><span class="zh">客戶高頻問題標準解答，快速查閱</span><span class="en-text">Standard answers to common customer queries</span></div>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🌟 <span class="zh">平台定位</span><span class="en-text">About MC Markets</span></h3>
+    <p><span class="zh">MC Markets 是鏈上可驗證的多資產交易平台。外匯、貴金屬、指數、能源、美股、加密貨幣——傳統市場與鏈上資產，一個帳戶，全線覆蓋。現貨與永續合約交易，資產儲備部署在 <span class="hl">Arbitrum</span>，鏈上透明，用戶可驗證。</span><span class="en-text">MC Markets is an on-chain verifiable multi-asset trading platform. Forex, precious metals, indices, energy, US stocks, crypto — traditional markets and on-chain assets under one account. Spot and perpetual contract trading, asset reserves deployed on <span class="hl">Arbitrum</span>, transparent and user-verifiable.</span></p>
+    <br>
+    <ul>
+      <li><span class="zh">使命：將 Web2 基礎設施與 Web3 功能體驗相結合</span><span class="en-text">Mission: Combine Web2 infrastructure with Web3 functionality</span></li>
+      <li><span class="zh">願景：重新定義數字金融交易體驗，構建開放金融生態</span><span class="en-text">Vision: Redefine digital financial trading, build an open finance ecosystem</span></li>
+      <li><span class="zh">口號：Trade Smart, Profit Bigger / 智贏千里，益達無界</span><span class="en-text">Tagline: Trade Smart, Profit Bigger</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>⚡ <span class="zh">快速參考</span><span class="en-text">Quick Reference</span></h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:11px;margin-top:8px">
+      <div style="background:var(--bg3);border-radius:8px;padding:13px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px"><span class="zh">客服郵箱</span><span class="en-text">Support Email</span></div>
+        <div style="color:var(--accent);font-size:13px">cs@mcmarkets.com</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:13px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px"><span class="zh">緊急問題回覆</span><span class="en-text">Urgent Reply</span></div>
+        <div style="color:var(--gold);font-size:13px"><span class="zh">4 小時內</span><span class="en-text">Within 4 hours</span></div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:13px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px"><span class="zh">一般問題回覆</span><span class="en-text">General Reply</span></div>
+        <div style="color:var(--text);font-size:13px"><span class="zh">24 小時內</span><span class="en-text">Within 24 hours</span></div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:13px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px"><span class="zh">監管機構</span><span class="en-text">Regulator</span></div>
+        <div style="color:var(--text);font-size:13px">FSA</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:13px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px"><span class="zh">智能客服語言</span><span class="en-text">AI Support Languages</span></div>
+        <div style="color:var(--text);font-size:13px">60+</div>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:13px">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px"><span class="zh">前端語言</span><span class="en-text">UI Languages</span></div>
+        <div style="color:var(--text);font-size:13px"><span class="zh">中英日韓越印尼西法</span><span class="en-text">8 languages</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── GLOSSARY ─── -->
+<section class="section" id="sec-glossary">
+  <div class="section-title"><span class="zh">📖 術語表</span><span class="en-text">📖 Glossary</span></div>
+  <div class="section-desc"><span class="zh">平台核心術語定義，幫助客服精確理解並向用戶解釋產品概念。</span><span class="en-text">Core platform terminology to help the CS team explain concepts accurately to users.</span></div>
+  <div class="glossary-grid">
+    <div class="glossary-item"><div class="glossary-term">Available Margin</div><div class="glossary-cn"><span class="zh">可用保證金</span><span class="en-text">Available Margin</span></div><div class="glossary-def"><span class="zh">總資產中，可用於開新倉或支付費用、虧損的部分。</span><span class="en-text">The portion of your total equity that can be used to open new positions or cover fees and losses.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Cross Margin</div><div class="glossary-cn"><span class="zh">全倉保證金</span><span class="en-text">Cross Margin</span></div><div class="glossary-def"><span class="zh">帳戶中所有可用資金共享作為倉位保證金，有助於避免倉位被提前清算。</span><span class="en-text">All available account funds are shared as margin across positions, helping to avoid early liquidation.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Funding Rate</div><div class="glossary-cn"><span class="zh">資金費率</span><span class="en-text">Funding Rate</span></div><div class="glossary-def"><span class="zh">定期支付的費用，用於平衡多空倉位。偏重的一方每小時向另一方支付。</span><span class="en-text">Periodic payment to balance long and short positions. The heavier side pays the other side hourly.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Fund Password</div><div class="glossary-cn"><span class="zh">資金密碼</span><span class="en-text">Fund Password</span></div><div class="glossary-def"><span class="zh">保護資產操作的獨立密碼，8-16位，含大小寫字母、數字和特殊字符。</span><span class="en-text">A separate password protecting asset operations. 8–16 chars including upper/lower case, numbers, and special characters.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Earn</div><div class="glossary-cn"><span class="zh">賺取 / 活期理財</span><span class="en-text">Flexible Savings</span></div><div class="glossary-def"><span class="zh">現貨帳戶閒置資產按動態年化收益率賺取每日利息，無鎖定期。</span><span class="en-text">Deposit idle spot account assets to earn daily interest at a dynamic APY. No lock-up period.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Gap</div><div class="glossary-cn"><span class="zh">跳空</span><span class="en-text">Price Gap</span></div><div class="glossary-def"><span class="zh">資產在一個交易週期內出現的價格空白，通常由重大新聞或事件引起。</span><span class="en-text">A price range with no trading activity in a session, usually caused by major news or events.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Impact Cost</div><div class="glossary-cn"><span class="zh">影響成本</span><span class="en-text">Impact Cost</span></div><div class="glossary-def"><span class="zh">訂單規模對流動性的衝擊。訂單越大，影響成本越高，下單前展示預估數字。</span><span class="en-text">The price impact of an order on liquidity. Larger orders = higher impact. Shown before submission.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Liquidation</div><div class="glossary-cn"><span class="zh">清算</span><span class="en-text">Liquidation</span></div><div class="glossary-def"><span class="zh">當保證金率低於維持保證金率（MMR）時，系統自動平倉。基於標記價，非單筆成交價。</span><span class="en-text">When margin ratio drops below MMR, the system auto-closes positions. Based on Mark Price, not last traded price.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Mark Price</div><div class="glossary-cn"><span class="zh">標記價</span><span class="en-text">Mark Price</span></div><div class="glossary-def"><span class="zh">平台公允價格基準，由多源預言機與內部數據加權生成，用於盈虧計算、清算和風控。</span><span class="en-text">The platform's fair price reference, aggregated from multiple oracles and internal data. Used for PnL, liquidation, and risk control.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">MMR</div><div class="glossary-cn"><span class="zh">維持保證金率</span><span class="en-text">Maintenance Margin Ratio</span></div><div class="glossary-def"><span class="zh">維持倉位所需的最低保證金比例。低於此值觸發強制平倉。</span><span class="en-text">Minimum margin ratio required to keep a position open. Falling below this triggers forced liquidation.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Oracle</div><div class="glossary-cn"><span class="zh">預言機</span><span class="en-text">Oracle</span></div><div class="glossary-def"><span class="zh">外部數據提供者，提供獨立驗證的現貨參考價格。MC Markets 使用 Chainlink 和 Pyth。</span><span class="en-text">External data providers supplying independently verified spot reference prices. MC Markets uses Chainlink and Pyth.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">PnL</div><div class="glossary-cn"><span class="zh">盈虧</span><span class="en-text">Profit and Loss</span></div><div class="glossary-def"><span class="zh">Unrealized PnL：當前開倉的浮動盈虧。Realized PnL：已平倉交易的最終淨盈虧。</span><span class="en-text">Unrealized PnL: floating P&amp;L on open positions. Realized PnL: final net P&amp;L on closed trades.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Proof of Reserves</div><div class="glossary-cn"><span class="zh">儲備金證明</span><span class="en-text">Proof of Reserves</span></div><div class="glossary-def"><span class="zh">平台基於默克爾樹部署在 Arbitrum 上的 1:1 儲備校驗機制，用戶可自行驗證。</span><span class="en-text">On-chain 1:1 reserve verification using Merkle tree, deployed on Arbitrum. User-verifiable at any time.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Swap</div><div class="glossary-cn"><span class="zh">閃兌</span><span class="en-text">Instant Swap</span></div><div class="glossary-def"><span class="zh">帳戶內即時資產轉換，由平台內部定價引擎驅動，無需鏈上確認。</span><span class="en-text">Instant in-account asset conversion powered by the platform's internal pricing engine. No on-chain confirmation needed.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Skew</div><div class="glossary-cn"><span class="zh">淨偏倚</span><span class="en-text">Net Skew</span></div><div class="glossary-def"><span class="zh">衡量平台多空倉位不平衡程度。偏倚過高時，影響資金費率計算。</span><span class="en-text">Measures the long/short imbalance on the platform. High skew affects funding rate calculation.</span></div></div>
+    <div class="glossary-item"><div class="glossary-term">Mid-Price Input</div><div class="glossary-cn"><span class="zh">中間價輸入</span><span class="en-text">Mid-Price Input</span></div><div class="glossary-def"><span class="zh">基於最優買賣價中間值生成的智能限價功能，方便快速下限價單。</span><span class="en-text">Smart limit order feature that auto-fills the midpoint between the best bid and ask prices.</span></div></div>
+  </div>
+</section>
+
+<!-- ─── ONBOARDING ─── -->
+<section class="section" id="sec-onboarding">
+  <div class="section-title"><span class="zh">🚀 入門指南</span><span class="en-text">🚀 Onboarding</span></div>
+  <div class="section-desc"><span class="zh">帳戶創建、驗證、安全設置完整流程。</span><span class="en-text">Full walkthrough of account creation, verification, and security setup.</span></div>
+
+  <h2 class="sub"><span class="zh">帳戶創建方式</span><span class="en-text">Account Registration</span></h2>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">📧</div><div class="card-title"><span class="zh">郵箱注冊</span><span class="en-text">Email Registration</span></div><div class="card-body"><span class="zh">填寫必要信息即可創建帳戶。</span><span class="en-text">Fill in the required info to create an account.</span></div></div>
+    <div class="card"><div class="card-icon">🔵</div><div class="card-title">Google <span class="zh">登錄</span><span class="en-text">Login</span></div><div class="card-body"><span class="zh">一鍵注冊並登錄，快速便捷。</span><span class="en-text">One-click registration and login via Google OAuth.</span></div></div>
+    <div class="card"><div class="card-icon">🦊</div><div class="card-title"><span class="zh">Web3 錢包連接</span><span class="en-text">Web3 Wallet Connect</span></div><div class="card-body"><span class="zh">直接連接錢包，地址即身份。支持 MetaMask、OKX Wallet、1inch 等主流錢包。</span><span class="en-text">Connect your wallet directly — your address is your identity. Supports MetaMask, OKX Wallet, 1inch Wallet, and more.</span></div></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">帳戶結構（四個獨立帳戶）</span><span class="en-text">Account Structure (4 Sub-Accounts)</span></h2>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">📊</div><div class="card-title"><span class="zh">合約帳戶</span><span class="en-text">Futures Account</span></div><div class="card-body"><span class="zh">用於永續合約交易，以 USDC 結算。</span><span class="en-text">For perpetual contract trading, settled in USDC.</span></div></div>
+    <div class="card"><div class="card-icon">💱</div><div class="card-title"><span class="zh">現貨帳戶</span><span class="en-text">Spot Account</span></div><div class="card-body"><span class="zh">用於現貨交易和閃兌，持有 USDC 及數字資產。充值資金進入此帳戶。</span><span class="en-text">For spot trading and swaps. Holds USDC and digital assets. All deposits arrive here.</span></div></div>
+    <div class="card"><div class="card-icon">🏦</div><div class="card-title"><span class="zh">金庫帳戶</span><span class="en-text">Vault Account</span></div><div class="card-body"><span class="zh">用於 MLP 金庫存款，鎖定期 4 天。</span><span class="en-text">For MLP Vault deposits. 4-day lock-up period.</span></div></div>
+    <div class="card"><div class="card-icon">💎</div><div class="card-title"><span class="zh">理財帳戶</span><span class="en-text">Earn Account</span></div><div class="card-body"><span class="zh">用於賺取（Earn）存入，賺取每日利息，無鎖定期。</span><span class="en-text">For Earn deposits. Daily interest accrual, no lock-up.</span></div></div>
+  </div>
+  <div class="alert alert-info"><span class="alert-icon">ℹ️</span><span><span class="zh">四個帳戶統一展示在投資組合頁面。帳戶間劃轉即時完成，不收取任何費用。</span><span class="en-text">All four accounts are displayed together on the Portfolio page. Transfers between accounts are instant and free.</span></span></div>
+
+  <h2 class="sub">2FA</h2>
+  <div class="info-block">
+    <h3>🔐 <span class="zh">設定流程</span><span class="en-text">Setup Steps</span></h3>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-content"><div class="step-title"><span class="zh">下載 Authenticator App</span><span class="en-text">Download Authenticator App</span></div><div class="step-desc"><span class="zh">推薦使用 Google Authenticator 或其他支持的 App。</span><span class="en-text">Recommended: Google Authenticator or any TOTP-compatible app.</span></div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-content"><div class="step-title"><span class="zh">掃描平台二維碼</span><span class="en-text">Scan the Platform QR Code</span></div><div class="step-desc"><span class="zh">在平台安全設置中獲取二維碼並掃描綁定。</span><span class="en-text">Go to Security Settings on the platform and scan the QR code to bind.</span></div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-content"><div class="step-title"><span class="zh">保存恢復碼</span><span class="en-text">Save Recovery Codes</span></div><div class="step-desc"><span class="zh">立即離線保存恢復碼，手機丟失時可用於登錄。</span><span class="en-text">Save recovery codes offline immediately. Use them to log in if you lose your device.</span></div></div></div>
+    </div>
+  </div>
+  <div class="info-block">
+    <h3>⚠️ <span class="zh">常見 2FA 問題處理</span><span class="en-text">Common 2FA Issues</span></h3>
+    <ul>
+      <li><strong><span class="zh">驗證碼無法使用：</span><span class="en-text">Code not working:</span></strong> <span class="zh">使用恢復碼登錄，恢復碼用完請聯繫 cs@mcmarkets.com</span><span class="en-text">Use your saved recovery code to log in. If all codes are used up, contact cs@mcmarkets.com</span></li>
+      <li><strong><span class="zh">重置谷歌驗證器：</span><span class="en-text">Reset Google Authenticator:</span></strong> <span class="zh">安全設置 → 點擊【重置】→ 驗證後重新掃碼。重置後</span><span class="en-text">Security Settings → click Reset → verify and re-scan. After reset:</span> <span class="badge badge-red">24h <span class="zh">提現鎖定</span><span class="en-text">withdrawal lock</span></span></li>
+      <li><strong><span class="zh">降級驗證：</span><span class="en-text">Fallback verification:</span></strong> <span class="zh">當前方式不可用時，系統自動切換其他可用方式。全部不可用請聯繫客服。</span><span class="en-text">If current method is unavailable, the system automatically switches to another. If all fail, contact support.</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── DEPOSIT ─── -->
+<section class="section" id="sec-deposit">
+  <div class="section-title"><span class="zh">💰 存款 / 提款</span><span class="en-text">💰 Deposit / Withdrawal</span></div>
+  <div class="section-desc"><span class="zh">資金充提流程、費用規則及安全機制。</span><span class="en-text">Full deposit and withdrawal flow, fee rules, and security mechanisms.</span></div>
+
+  <h2 class="sub"><span class="zh">存款</span><span class="en-text">Deposit</span></h2>
+  <div class="info-block">
+    <h3>📥 <span class="zh">存款規則</span><span class="en-text">Deposit Rules</span></h3>
+    <ul>
+      <li><strong><span class="zh">支持幣種：</span><span class="en-text">Supported assets:</span></strong> BTC, ETH, SOL, USDT, USDC</li>
+      <li><strong><span class="zh">最低充值：</span><span class="en-text">Minimum deposit:</span></strong> <span class="zh">以充值頁面提示為準</span><span class="en-text">Refer to the deposit page for the current minimum</span></li>
+      <li><strong><span class="zh">到帳時間：</span><span class="en-text">Arrival time:</span></strong> <span class="zh">內部劃轉即時；外部充值需鏈上確認，通常 1–5 分鐘</span><span class="en-text">Internal transfers: instant. External: 1–5 min depending on network confirmation</span></li>
+      <li><strong><span class="zh">費用：</span><span class="en-text">Fees:</span></strong> <span class="zh">MC Markets 不收充值手續費，但需注意網絡的 Gas Fee</span><span class="en-text">MC Markets charges no deposit fee, but network Gas Fees apply</span></li>
+      <li><strong><span class="zh">入帳帳戶：</span><span class="en-text">Destination:</span></strong> <span class="zh">充值資金進入現貨帳戶，需合約交易時再劃轉</span><span class="en-text">Funds arrive in Spot Account. Transfer to Futures Account when needed</span></li>
+    </ul>
+  </div>
+  <div class="alert alert-danger"><span class="alert-icon">🚨</span><span><span class="zh">充值網絡請確認與發送端一致——充錯網絡意味著資產永久丟失。</span><span class="en-text">Always verify the deposit network matches the sending side. Sending to the wrong network results in permanent loss of funds.</span></span></div>
+
+  <h2 class="sub"><span class="zh">提款</span><span class="en-text">Withdrawal</span></h2>
+  <div class="info-block">
+    <h3>📤 <span class="zh">提款規則</span><span class="en-text">Withdrawal Rules</span></h3>
+    <ul>
+      <li><strong><span class="zh">提現帳戶：</span><span class="en-text">Source account:</span></strong> <span class="zh">僅限現貨帳戶，合約帳戶資金需先劃轉</span><span class="en-text">Withdrawals are only from the Spot Account. Transfer from Futures first if needed</span></li>
+      <li><strong><span class="zh">最低提現：</span><span class="en-text">Minimum withdrawal:</span></strong> <span class="zh">以提現頁面為準</span><span class="en-text">Refer to the withdrawal page</span></li>
+      <li><strong><span class="zh">手續費：</span><span class="en-text">Fees:</span></strong> <span class="zh">以提現頁面顯示為準</span><span class="en-text">Refer to the withdrawal page for current fees</span></li>
+      <li><strong><span class="zh">安全驗證：</span><span class="en-text">Security verification:</span></strong> <span class="zh">需經過多重安全驗證</span><span class="en-text">Multi-layer security verification required</span></li>
+    </ul>
+  </div>
+
+  <h2 class="sub"><span class="zh">提幣地址白名單</span><span class="en-text">Withdrawal Address Whitelist</span></h2>
+  <div class="info-block">
+    <h3>🔒 <span class="zh">白名單功能</span><span class="en-text">Whitelist Features</span></h3>
+    <ul>
+      <li><span class="zh">只能向白名單地址提款，有效防止帳戶被盜後的資金損失</span><span class="en-text">Withdrawals are restricted to whitelisted addresses, protecting against unauthorized access</span></li>
+      <li><span class="zh">新地址需經過安全驗證後才能添加</span><span class="en-text">New addresses require security verification before being added</span></li>
+      <li><strong><span class="zh">有效期：</span><span class="en-text">Expiry:</span></strong> <span class="zh">白名單地址有有效期，超出後自動刪除</span><span class="en-text">Each whitelisted address has an expiry date and is automatically removed when expired</span></li>
+    </ul>
+  </div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><span><span class="zh">區塊鏈交易不可逆，轉帳錯誤地址無法找回。建議先小額測試。</span><span class="en-text">Blockchain transactions are irreversible. Funds sent to a wrong address cannot be recovered. Always do a small test transfer first.</span></span></div>
+</section>
+
+<!-- ─── KYC ─── -->
+<section class="section" id="sec-kyc">
+  <div class="section-title">🪪 KYC</div>
+  <div class="section-desc"><span class="zh">了解 KYC 等級要求，準確告知用戶所需的驗證步驟。</span><span class="en-text">Understand KYC tier requirements to correctly guide users through verification.</span></div>
+
+  <div class="alert alert-success"><span class="alert-icon">✅</span><span><span class="zh">加密貨幣交易（合約和現貨）無需 KYC。RWA 類標的——外匯、黃金、白銀、指數、原油、美股——需完成 L0 基礎認證。</span><span class="en-text">Crypto trading (spot & futures) requires NO KYC. RWA instruments — forex, gold, silver, indices, crude oil, US stocks — require L0 basic verification.</span></span></div>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🔵</div><div class="card-title">L0 — <span class="zh">基礎認證</span><span class="en-text">Basic Verification</span></div><div class="card-body"><span class="zh">姓名、居住地區、國籍、證件類型、證件號碼及有效期。</span><span class="en-text">Name, region of residence, nationality, document type, document number, and expiry date.</span><br><br><span class="badge badge-green"><span class="zh">通常較快</span><span class="en-text">Usually fast</span></span></div></div>
+    <div class="card"><div class="card-icon">🟡</div><div class="card-title">L1 — <span class="zh">證件認證</span><span class="en-text">Document Verification</span></div><div class="card-body"><span class="zh">上傳身份證、護照或駕駛證。</span><span class="en-text">Upload ID card, passport, or driver's license.</span><br><br><span class="badge badge-gold"><span class="zh">可能需要更多時間</span><span class="en-text">May take longer</span></span></div></div>
+    <div class="card"><div class="card-icon">🔴</div><div class="card-title">L2 — <span class="zh">人臉認證</span><span class="en-text">Facial Recognition</span></div><div class="card-body"><span class="zh">完成人臉識別驗證。</span><span class="en-text">Complete facial recognition verification.</span><br><br><span class="badge badge-red"><span class="zh">更高等級</span><span class="en-text">Highest tier</span></span></div></div>
+  </div>
+  <div class="info-block"><h3>📬 <span class="zh">結果通知</span><span class="en-text">Result Notification</span></h3><p><span class="zh">KYC 審核結果通過平台站內信通知。</span><span class="en-text">KYC review results are sent via the platform's in-app messaging system.</span></p></div>
+</section>
+
+<!-- ─── SECURITY ─── -->
+<section class="section" id="sec-security">
+  <div class="section-title">🔐 <span class="zh">安全設置</span><span class="en-text">Security Settings</span></div>
+  <div class="section-desc"><span class="zh">帳戶安全功能詳解，常見安全問題處理流程。</span><span class="en-text">Account security features and common issue resolution flows.</span></div>
+
+  <div class="info-block">
+    <h3>🔑 <span class="zh">資金密碼規則</span><span class="en-text">Fund Password Rules</span></h3>
+    <ul>
+      <li><span class="zh">8-16 位，含大小寫字母、數字和特殊字符</span><span class="en-text">8–16 characters including upper/lower case, numbers, and special characters</span></li>
+      <li><span class="zh">用於保護：提現、金庫提款等敏感操作</span><span class="en-text">Required for: withdrawals, vault withdrawals, and other sensitive operations</span></li>
+      <li><span class="zh">設置路徑：帳戶設置 → 安全設置 → 資金密碼</span><span class="en-text">Path: Account Settings → Security Settings → Fund Password</span></li>
+      <li><span class="zh">設置後觸發</span><span class="en-text">After setting:</span> <span class="badge badge-red">24h <span class="zh">提現鎖定</span><span class="en-text">withdrawal lock</span></span></li>
+      <li><span class="zh">忘記密碼：點擊重置，通過郵箱或谷歌驗證器驗證，重置後同樣 24 小時鎖定</span><span class="en-text">Forgot password: click Reset, verify via email or Google Authenticator. Same 24h lock applies after reset</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>⏰ <span class="zh">24 小時提現鎖定觸發條件</span><span class="en-text">24-Hour Withdrawal Lock Triggers</span></h3>
+    <ul>
+      <li><span class="zh">修改資金密碼</span><span class="en-text">Changing fund password</span></li>
+      <li><span class="zh">重置谷歌驗證器</span><span class="en-text">Resetting Google Authenticator</span></li>
+      <li><span class="zh">變更郵箱綁定</span><span class="en-text">Changing bound email address</span></li>
+    </ul>
+  </div>
+
+  <div class="alert alert-danger"><span class="alert-icon">🚨</span><span><span class="zh">MC Markets 絕不會私信要求轉帳、索取密碼、私鑰、助記詞或 2FA 驗證碼。所有官方信息僅通過官方渠道發布。</span><span class="en-text">MC Markets will NEVER privately message users to request transfers, passwords, private keys, seed phrases, or 2FA codes. All official communications are through official channels only.</span></span></div>
+</section>
+
+<!-- ─── TRADING ─── -->
+<section class="section" id="sec-trading">
+  <div class="section-title">📊 <span class="zh">交易指南</span><span class="en-text">Trading Guide</span></div>
+  <div class="section-desc"><span class="zh">合約規格、現貨交易、成交機制完整參考。</span><span class="en-text">Full reference for contract specs, spot trading, and execution mechanics.</span></div>
+
+  <h2 class="sub"><span class="zh">永續合約規格</span><span class="en-text">Perpetual Contract Specs</span></h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th><span class="zh">品種</span><span class="en-text">Instrument</span></th><th><span class="zh">合約大小</span><span class="en-text">Contract Size</span></th><th><span class="zh">最小跳動</span><span class="en-text">Min Tick</span></th><th><span class="zh">最小下單 USD</span><span class="en-text">Min Order USD</span></th><th><span class="zh">最小數量</span><span class="en-text">Min Qty</span></th></tr></thead>
+      <tbody>
+        <tr><td>BTCUSDC</td><td>1</td><td class="hl">1.0</td><td>$10</td><td>0.001</td></tr>
+        <tr><td>ETHUSDC</td><td>1</td><td class="hl">0.1</td><td>$10</td><td>0.01</td></tr>
+        <tr><td>SOLUSDC</td><td>1</td><td class="hl">0.01</td><td>$10</td><td>1</td></tr>
+        <tr><td>XAUUSD</td><td>1 oz</td><td class="hl">0.001</td><td>$100</td><td>1</td></tr>
+        <tr><td>XAGUSD</td><td>1 oz</td><td class="hl">0.00001</td><td>$100</td><td>50</td></tr>
+        <tr><td><span class="zh">外匯 Majors</span><span class="en-text">Forex Majors</span></td><td><span class="zh">1 基礎貨幣</span><span class="en-text">1 base ccy</span></td><td class="hl">0.0001</td><td>$1,000</td><td>1000</td></tr>
+        <tr><td><span class="zh">指數</span><span class="en-text">Indices</span> (US500…)</td><td><span class="zh">1 點</span><span class="en-text">1 pt</span></td><td class="hl">1</td><td>$100</td><td>0.01</td></tr>
+        <tr><td>USOIL</td><td>1 bbl</td><td class="hl">0.001</td><td>$100</td><td>10</td></tr>
+        <tr><td><span class="zh">美股</span><span class="en-text">US Stocks</span></td><td><span class="zh">1 股</span><span class="en-text">1 share</span></td><td class="hl">0.00001</td><td>$10</td><td>1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub"><span class="zh">現貨交易對</span><span class="en-text">Spot Trading Pairs</span></h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th><span class="zh">交易對</span><span class="en-text">Pair</span></th><th><span class="zh">價格精度</span><span class="en-text">Price Tick</span></th><th><span class="zh">數量精度</span><span class="en-text">Qty Step</span></th><th><span class="zh">手續費</span><span class="en-text">Fee</span></th></tr></thead>
+      <tbody>
+        <tr><td>BTC/USDC</td><td class="hl">1</td><td>0.00001</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>ETH/USDC</td><td class="hl">0.1</td><td>0.0001</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>SOL/USDC</td><td class="hl">0.01</td><td>0.01</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>HYPE/USDC</td><td class="hl">0.001</td><td>0.01</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>FARTCOIN/USDC</td><td class="hl">0.00001</td><td>0.1</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>ENA/USDC</td><td class="hl">0.00001</td><td>0.1</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>PURR/USDC</td><td class="hl">0.000001</td><td>1</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>MON/USDC</td><td class="hl">0.000001</td><td>1</td><td class="hl-green">0.05%</td></tr>
+        <tr><td>PUMP/USDC</td><td class="hl">0.000001</td><td>10</td><td class="hl-green">0.05%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub"><span class="zh">價格機制</span><span class="en-text">Price Mechanism</span></h2>
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">🔮</div><div class="card-title"><span class="zh">預言機價</span><span class="en-text">Oracle Price</span></div><div class="card-body"><span class="zh">參考 Chainlink 和 Pyth 預言機的現貨參考價格，多源交叉驗證，抗操縱。</span><span class="en-text">References Chainlink and Pyth spot prices. Multi-source cross-validation to prevent manipulation.</span></div></div>
+    <div class="card"><div class="card-icon">⚖️</div><div class="card-title"><span class="zh">標記價</span><span class="en-text">Mark Price</span></div><div class="card-body"><span class="zh">平台公允價格基準，結合內部數據與外部預言機加權生成。用於盈虧、清算、資金費率計算。</span><span class="en-text">Platform's fair price, aggregated from internal data and external oracles. Used for PnL, liquidation, and funding rate calculations.</span></div></div>
+  </div>
+</section>
+
+<!-- ─── ORDERS ─── -->
+<section class="section" id="sec-orders">
+  <div class="section-title">📋 <span class="zh">訂單類型</span><span class="en-text">Order Types</span></div>
+  <div class="section-desc"><span class="zh">了解各訂單類型的觸發機制，幫助用戶選擇適合的下單方式。</span><span class="en-text">Understand each order type's trigger mechanism to guide users in choosing the right approach.</span></div>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">⚡</div><div class="card-title"><span class="zh">市價單</span><span class="en-text">Market Order</span></div><div class="card-body"><span class="zh">以當前市場最佳一口價立即成交。優先速度，適合快速進出場。</span><span class="en-text">Executes immediately at the best available quote. Prioritizes speed — suitable for quick entries and exits.</span></div></div>
+    <div class="card"><div class="card-icon">📌</div><div class="card-title"><span class="zh">限價單</span><span class="en-text">Limit Order</span></div><div class="card-body"><span class="zh">僅在價格觸及設定水平時觸發。分開倉和平倉兩個方向。跳空時，於跳空後的真實穿透價格成交。</span><span class="en-text">Only triggers when price reaches the set level. Covers both open and close directions. In a gap, fills at the actual post-gap price.</span></div></div>
+    <div class="card"><div class="card-icon">🛡️</div><div class="card-title"><span class="zh">止損單</span><span class="en-text">Stop-Loss</span></div><div class="card-body"><span class="zh">當標記價達到設定水平時自動平倉，防止超出預期的虧損。</span><span class="en-text">Auto-closes the position when Mark Price hits the set level, preventing losses beyond the threshold.</span></div></div>
+    <div class="card"><div class="card-icon">🎯</div><div class="card-title"><span class="zh">止盈單</span><span class="en-text">Take-Profit</span></div><div class="card-body"><span class="zh">當標記價達到設定水平時自動平倉，無需盯盤即可鎖定利潤。</span><span class="en-text">Auto-closes the position when Mark Price hits the target, locking in profit without manual monitoring.</span></div></div>
+  </div>
+
+  <div class="alert alert-info"><span class="alert-icon">ℹ️</span><span><span class="zh">所有觸發訂單均以標記價 Mark Price 為準，有效避免因單一異常成交價導致的錯誤觸發。這也是為什麼最新成交價到了但止損/止盈單沒觸發的原因。</span><span class="en-text">All triggered orders use Mark Price as the reference, not the last traded price. This prevents accidental triggers from momentary price spikes — which is why SL/TP may not fire even when the last price reaches the target.</span></span></div>
+
+  <h2 class="sub"><span class="zh">滑點控制</span><span class="en-text">Slippage Control</span></h2>
+  <div class="info-block">
+    <h3>⚙️ <span class="zh">滑點設置</span><span class="en-text">Slippage Settings</span></h3>
+    <ul>
+      <li><span class="zh">用戶可在交易面板自行調整最大滑點容忍度，僅影響手動提交的市價單</span><span class="en-text">Users can adjust max slippage tolerance in the trade panel. Applies to manually submitted market orders only</span></li>
+      <li><span class="zh">成交價超出設定滑點範圍，訂單將被取消</span><span class="en-text">If fill price exceeds the slippage setting, the order is cancelled</span></li>
+      <li><strong><span class="zh">系統默認：</span><span class="en-text">System defaults:</span></strong> <span class="zh">常規平倉 8%，止盈/止損 10%</span><span class="en-text">Regular close: 8%, TP/SL: 10%</span></li>
+    </ul>
+  </div>
+
+  <h2 class="sub"><span class="zh">限價單保護機制</span><span class="en-text">Limit Order Protection</span></h2>
+  <div class="info-block">
+    <h3>🔒 <span class="zh">規則</span><span class="en-text">Rules</span></h3>
+    <ul>
+      <li><strong><span class="zh">做多：</span><span class="en-text">Long:</span></strong> <span class="zh">限價不能低於當前最優賣價</span><span class="en-text">Limit price cannot be below the current best ask</span></li>
+      <li><strong><span class="zh">做空：</span><span class="en-text">Short:</span></strong> <span class="zh">限價不能高於當前最優買價</span><span class="en-text">Limit price cannot be above the current best bid</span></li>
+      <li><span class="zh">違反規則的訂單將被拒絕</span><span class="en-text">Orders violating these rules will be rejected</span></li>
+      <li><span class="zh">限價偏離最優價超過 3% 時，系統彈出警告提示</span><span class="en-text">A warning pops up if the limit price deviates more than 3% from the best price</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── MARGIN ─── -->
+<section class="section" id="sec-margin">
+  <div class="section-title">⚖️ <span class="zh">保證金 / 杠桿</span><span class="en-text">Margin / Leverage</span></div>
+  <div class="section-desc"><span class="zh">杠桿分層機制、清算規則、盈虧計算。</span><span class="en-text">Tiered leverage system, liquidation rules, and PnL calculation.</span></div>
+
+  <div class="info-block">
+    <h3>📐 <span class="zh">初始保證金計算</span><span class="en-text">Initial Margin Formula</span></h3>
+    <p><span class="zh">開倉所需保證金 = </span><span class="en-text">Required margin = </span><span class="hl"><span class="zh">倉位大小 × 標記價 ÷ 杠桿</span><span class="en-text">position size × mark price ÷ leverage</span></span></p>
+    <br>
+    <p><span class="zh">全倉模式（默認）：帳戶所有可用資金共享作為保證金，最大化資金效率。全倉倉位的未實現盈虧自動作為新倉位的初始保證金。</span><span class="en-text">Cross margin mode (default): All available account funds are shared as margin to maximize efficiency. Unrealized PnL on cross positions is automatically used as initial margin for new positions.</span></p>
+  </div>
+
+  <h2 class="sub"><span class="zh">杠桿分層</span><span class="en-text">Tiered Leverage</span></h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th><span class="zh">資產</span><span class="en-text">Asset</span></th><th><span class="zh">名義金額（USD）</span><span class="en-text">Notional (USD)</span></th><th><span class="zh">最大杠桿</span><span class="en-text">Max Leverage</span></th></tr></thead>
+      <tbody>
+        <tr><td><span class="zh">加密貨幣</span><span class="en-text">Crypto</span> (BTC/ETH/SOL)</td><td>0 – 500,000</td><td class="hl-gold">50×</td></tr>
+        <tr><td><span class="zh">加密貨幣</span><span class="en-text">Crypto</span></td><td>500,000 – 1,000,000</td><td class="hl-gold">25×</td></tr>
+        <tr><td><span class="zh">貴金屬</span><span class="en-text">Precious Metals</span> (XAU/XAG)</td><td>0 – 2,000,000</td><td class="hl-gold">200×</td></tr>
+        <tr><td><span class="zh">貴金屬</span><span class="en-text">Precious Metals</span></td><td>2,000,000 – 3,000,000</td><td class="hl-gold">100×</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub"><span class="zh">清算機制</span><span class="en-text">Liquidation</span></h2>
+  <div class="info-block">
+    <h3>🔴 <span class="zh">清算觸發</span><span class="en-text">Liquidation Trigger</span></h3>
+    <ul>
+      <li><span class="zh">當保證金率低於</span><span class="en-text">Triggered when margin ratio falls below</span> <strong>30%</strong></li>
+      <li><span class="zh">清算依據：標記價 Mark Price（非單一成交價）</span><span class="en-text">Basis: Mark Price (not the last traded price)</span></li>
+      <li><span class="zh">有效防止惡意操縱價格導致的錯誤清算</span><span class="en-text">Prevents manipulative price spikes from triggering incorrect liquidations</span></li>
+    </ul>
+  </div>
+
+  <h2 class="sub"><span class="zh">盈虧計算</span><span class="en-text">PnL Calculation</span></h2>
+  <div class="info-block">
+    <h3>📈 <span class="zh">公式</span><span class="en-text">Formulas</span></h3>
+    <p><strong><span class="zh">未實現盈虧</span><span class="en-text">Unrealized PnL</span></strong> = (Mark Price − <span class="zh">開倉均價</span><span class="en-text">Avg Entry</span>) × <span class="zh">倉位大小</span><span class="en-text">Position Size</span></p><br>
+    <p><strong><span class="zh">總帳戶價值</span><span class="en-text">Total Account Value</span></strong> = <span class="zh">存入資產 + 未實現盈虧 + 已實現盈虧 + 資金費率 − 手續費</span><span class="en-text">Deposited Assets + Unrealized PnL + Realized PnL + Funding Rate − Fees</span></p><br>
+    <p><strong><span class="zh">現貨未實現盈虧</span><span class="en-text">Spot Unrealized PnL</span></strong> = <span class="zh">當前資產總價值 − 歷史買入總成本</span><span class="en-text">Current Asset Value − Historical Cost Basis</span></p>
+  </div>
+</section>
+
+<!-- ─── FEES ─── -->
+<section class="section" id="sec-fees">
+  <div class="section-title">💸 <span class="zh">費用一覽</span><span class="en-text">Fee Schedule</span></div>
+  <div class="section-desc"><span class="zh">合約、現貨、閃兌完整費率結構。</span><span class="en-text">Full fee structure for futures, spot, and instant swap.</span></div>
+
+  <h2 class="sub"><span class="zh">合約 — 非加密貨幣</span><span class="en-text">Futures — Non-Crypto</span></h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th><span class="zh">資產</span><span class="en-text">Asset</span></th><th><span class="zh">示例</span><span class="en-text">Example</span></th><th><span class="zh">總費率</span><span class="en-text">Total Fee</span></th><th><span class="zh">開倉</span><span class="en-text">Open</span></th><th><span class="zh">平倉</span><span class="en-text">Close</span></th></tr></thead>
+      <tbody>
+        <tr><td><span class="zh">黃金</span><span class="en-text">Gold</span></td><td>XAUUSD</td><td class="hl-green">0.030%</td><td>0.015%</td><td>0.015%</td></tr>
+        <tr><td><span class="zh">白銀</span><span class="en-text">Silver</span></td><td>XAGUSD</td><td class="hl-green">0.100%</td><td>0.050%</td><td>0.050%</td></tr>
+        <tr><td><span class="zh">外匯</span><span class="en-text">Forex</span></td><td>EUR/USD…</td><td class="hl-green">0.020%</td><td>0.010%</td><td>0.010%</td></tr>
+        <tr><td><span class="zh">指數</span><span class="en-text">Indices</span></td><td>US500/NAS100…</td><td class="hl-green">0.050%</td><td>0.025%</td><td>0.025%</td></tr>
+        <tr><td><span class="zh">能源</span><span class="en-text">Energy</span></td><td>USOIL</td><td class="hl-green">0.100%</td><td>0.050%</td><td>0.050%</td></tr>
+        <tr><td><span class="zh">美股</span><span class="en-text">US Stocks</span></td><td>Tesla…</td><td class="hl-green">0.100%</td><td>0.050%</td><td>0.050%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub"><span class="zh">合約 — 加密貨幣（階梯費率）</span><span class="en-text">Futures — Crypto (Tiered)</span></h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th><span class="zh">等級</span><span class="en-text">Tier</span></th><th><span class="zh">14天加權量</span><span class="en-text">14D Volume</span></th><th><span class="zh">總費率</span><span class="en-text">Total Fee</span></th><th><span class="zh">開倉</span><span class="en-text">Open</span></th><th><span class="zh">平倉</span><span class="en-text">Close</span></th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">0</span></td><td>—</td><td class="hl-green">0.030%</td><td>0.015%</td><td>0.015%</td></tr>
+        <tr><td><span class="badge badge-blue">1</span></td><td>&gt; $5M</td><td class="hl-green">0.026%</td><td>0.014%</td><td>0.014%</td></tr>
+        <tr><td><span class="badge badge-blue">2</span></td><td>&gt; $25M</td><td class="hl-green">0.0215%</td><td>0.01075%</td><td>0.01075%</td></tr>
+        <tr><td><span class="badge badge-blue">3</span></td><td>&gt; $100M</td><td class="hl-green">0.017%</td><td>0.0085%</td><td>0.0085%</td></tr>
+        <tr><td><span class="badge badge-blue">4</span></td><td>&gt; $500M</td><td class="hl-green">0.014%</td><td>0.007%</td><td>0.007%</td></tr>
+        <tr><td><span class="badge badge-blue">5</span></td><td>&gt; $2B</td><td class="hl-green">0.013%</td><td>0.0065%</td><td>0.0065%</td></tr>
+        <tr><td><span class="badge badge-blue">6</span></td><td>&gt; $7B</td><td class="hl-green">0.012%</td><td>0.006%</td><td>0.006%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="sub"><span class="zh">現貨</span><span class="en-text">Spot</span></h2>
+  <div class="alert alert-success"><span class="alert-icon">✅</span><span><span class="zh">所有現貨交易對統一費率：</span><span class="en-text">All spot pairs uniform fee rate:</span> <strong>0.05%</strong></span></div>
+
+  <h2 class="sub"><span class="zh">閃兌手續費</span><span class="en-text">Swap Fees</span></h2>
+  <div class="info-block">
+    <h3>⚡ <span class="zh">閃兌費用規則</span><span class="en-text">Swap Fee Rules</span></h3>
+    <ul>
+      <li><span class="zh">每日 2,000 USDC 免手續費額度</span><span class="en-text">Daily free quota: 2,000 USDC</span></li>
+      <li><span class="zh">超出部分按正常費率收取</span><span class="en-text">Amounts above the quota are charged at the normal rate</span></li>
+      <li><span class="zh">額度每日 UTC 00:00 重置</span><span class="en-text">Quota resets daily at UTC 00:00</span></li>
+    </ul>
+  </div>
+
+  <div class="alert alert-success"><span class="alert-icon">✅</span><span><span class="zh">現貨、合約、金庫與理財帳戶之間的劃轉均不收費，即時完成。</span><span class="en-text">Transfers between Spot, Futures, Vault, and Earn accounts are always free and instant.</span></span></div>
+</section>
+
+<!-- ─── FUNDING ─── -->
+<section class="section" id="sec-funding">
+  <div class="section-title">🔄 <span class="zh">資金費率</span><span class="en-text">Funding Rate</span></div>
+  <div class="section-desc"><span class="zh">資金費率機制與結算規則說明。</span><span class="en-text">How funding rates work and settlement rules.</span></div>
+
+  <div class="info-block">
+    <h3>💡 <span class="zh">機制說明</span><span class="en-text">How It Works</span></h3>
+    <ul>
+      <li><strong><span class="zh">用途：</span><span class="en-text">Purpose:</span></strong> <span class="zh">確保市場多空平衡，反映市場淨偏倚（Skew）</span><span class="en-text">Balances long/short positions, reflects net market skew</span></li>
+      <li><strong><span class="zh">計算頻率：</span><span class="en-text">Update frequency:</span></strong> <span class="zh">每分鐘計算並更新，前端即時展示</span><span class="en-text">Recalculated every minute and displayed in real time</span></li>
+      <li><strong><span class="zh">結算頻率：</span><span class="en-text">Settlement frequency:</span></strong> <span class="zh">每小時整點結算一次</span><span class="en-text">Settled once per hour at the top of each hour</span></li>
+      <li><strong><span class="zh">查看歷史：</span><span class="en-text">History:</span></strong> <span class="zh">交易頁面下方「資金費交易歷史」欄目</span><span class="en-text">"Funding Rate History" section at the bottom of the trading page</span></li>
+    </ul>
+  </div>
+  <div class="alert alert-info"><span class="alert-icon">ℹ️</span><span><span class="zh">當市場多空失衡時，偏重的一方需向另一方支付資金費率，以鼓勵市場回歸平衡。</span><span class="en-text">When the market is skewed, the heavier side pays the lighter side to incentivize balance.</span></span></div>
+</section>
+
+<!-- ─── VAULT ─── -->
+<section class="section" id="sec-vault">
+  <div class="section-title">🏦 MLP Vault</div>
+  <div class="section-desc"><span class="zh">流動性金庫產品詳解，包含收益機制與風險說明。</span><span class="en-text">Full breakdown of the liquidity vault product, yield mechanism, and risk disclosure.</span></div>
+
+  <div class="info-block">
+    <h3>🔧 <span class="zh">運作機制</span><span class="en-text">How It Works</span></h3>
+    <ul>
+      <li><span class="zh">存入 USDC，成為流動性合夥人，支撐每一筆交易的瞬時執行</span><span class="en-text">Deposit USDC to become a liquidity partner, powering instant execution for every trade</span></li>
+      <li><strong><span class="zh">收益來源：</span><span class="en-text">Yield sources:</span></strong> <span class="zh">交易手續費分配 + 策略對沖截取的資金費率</span><span class="en-text">Trading fee distribution + funding rates captured through hedging strategies</span></li>
+      <li><strong><span class="zh">結算：</span><span class="en-text">Settlement:</span></strong> T+1 <span class="zh">每日單利，每日收益不計入次日本金</span><span class="en-text">daily simple interest. Daily yield is not compounded into principal</span></li>
+      <li><strong><span class="zh">鎖定期：</span><span class="en-text">Lock-up:</span></strong> <span class="zh">4 天。追加存款將以最新一筆時間重新計算鎖定期</span><span class="en-text">4 days. Adding more funds resets the lock-up timer based on the latest deposit</span></li>
+      <li><strong><span class="zh">幣種：</span><span class="en-text">Currency:</span></strong> <span class="zh">僅接受 USDC</span><span class="en-text">USDC only</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>🔁 <span class="zh">雙引擎流動性</span><span class="en-text">Dual-Engine Liquidity</span></h3>
+    <div class="card-grid" style="margin-top:10px">
+      <div class="card"><div class="card-title">MLP (<span class="zh">流動性中心</span><span class="en-text">Liquidity Hub</span>)</div><div class="card-body"><span class="zh">算法直接與 MLP 池撮合，無需等待對手方，即時成交。</span><span class="en-text">Algorithm matches directly against the MLP pool. No counterparty wait — instant execution.</span></div></div>
+      <div class="card"><div class="card-title">HSF (<span class="zh">對沖策略基金</span><span class="en-text">Hedge Strategy Fund</span>)</div><div class="card-body"><span class="zh">獨立風控基金，主動管理平台整體風險，通過做市策略抵消庫存壓力。</span><span class="en-text">Independent risk fund actively managing platform risk through market-making to offset inventory pressure.</span></div></div>
+    </div>
+  </div>
+
+  <div class="alert alert-danger"><span class="alert-icon">🚨</span><span><strong><span class="zh">風險提示：</span><span class="en-text">Risk Warning:</span></strong> <span class="zh">金庫採用主動交易策略，收益不保證。可能損失部分或全部本金，損失不予補償。</span><span class="en-text">The Vault uses active trading strategies. Yields are not guaranteed. You may lose part or all of your principal. Losses will not be compensated.</span></span></div>
+
+  <div class="info-block">
+    <h3>📊 <span class="zh">金庫 vs 賺取對比</span><span class="en-text">Vault vs Earn Comparison</span></h3>
+    <div class="table-wrap" style="margin-top:10px">
+      <table>
+        <thead><tr><th></th><th>Vault</th><th>Earn</th></tr></thead>
+        <tbody>
+          <tr><td><span class="zh">支持幣種</span><span class="en-text">Supported Assets</span></td><td>USDC only</td><td>BTC / ETH / SOL / USDC / USDT</td></tr>
+          <tr><td><span class="zh">鎖定期</span><span class="en-text">Lock-up</span></td><td><span class="badge badge-red">4 <span class="zh">天</span><span class="en-text">days</span></span></td><td><span class="badge badge-green"><span class="zh">無</span><span class="en-text">None</span></span></td></tr>
+          <tr><td><span class="zh">本金風險</span><span class="en-text">Principal Risk</span></td><td><span class="zh">存在風險</span><span class="en-text">At risk</span></td><td><span class="zh">不會虧損</span><span class="en-text">No loss</span></td></tr>
+          <tr><td><span class="zh">收益</span><span class="en-text">Yield</span></td><td><span class="zh">可能更高</span><span class="en-text">Potentially higher</span></td><td><span class="zh">相對穩定</span><span class="en-text">Relatively stable</span></td></tr>
+          <tr><td><span class="zh">風險等級</span><span class="en-text">Risk Level</span></td><td><span class="badge badge-red"><span class="zh">較高</span><span class="en-text">Higher</span></span></td><td><span class="badge badge-green"><span class="zh">較低</span><span class="en-text">Lower</span></span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EARN ─── -->
+<section class="section" id="sec-earn">
+  <div class="section-title">💎 Earn</div>
+  <div class="section-desc"><span class="zh">活期理財功能詳解。</span><span class="en-text">Flexible savings product details.</span></div>
+
+  <div class="card-grid">
+    <div class="card"><div class="card-icon">✅</div><div class="card-title"><span class="zh">支持幣種</span><span class="en-text">Supported Assets</span></div><div class="card-body">BTC, ETH, SOL, USDC, USDT</div></div>
+    <div class="card"><div class="card-icon">🔓</div><div class="card-title"><span class="zh">鎖定期</span><span class="en-text">Lock-up Period</span></div><div class="card-body"><span class="zh">無。隨存隨取，提取後即時轉入現貨帳戶。</span><span class="en-text">None. Deposit and withdraw anytime. Funds return to Spot Account instantly.</span></div></div>
+    <div class="card"><div class="card-icon">🛡️</div><div class="card-title"><span class="zh">本金安全</span><span class="en-text">Principal Safety</span></div><div class="card-body"><span class="zh">賺取功能不會導致本金虧損。</span><span class="en-text">Earn will never cause a loss to your principal.</span></div></div>
+  </div>
+
+  <div class="info-block">
+    <h3>📐 <span class="zh">計息規則</span><span class="en-text">Interest Rules</span></h3>
+    <ul>
+      <li><strong><span class="zh">計算方式：</span><span class="en-text">Method:</span></strong> <span class="zh">單利</span><span class="en-text">Simple interest</span></li>
+      <li><strong><span class="zh">公式：</span><span class="en-text">Formula:</span></strong> <span class="zh">每日利息 = 本金 × 當日年化收益率 ÷ 365</span><span class="en-text">Daily interest = Principal × Daily APY ÷ 365</span></li>
+      <li><strong><span class="zh">幣本位：</span><span class="en-text">Denomination:</span></strong> <span class="zh">利息以存入原幣種發放（存 BTC 得 BTC）</span><span class="en-text">Interest paid in the deposited currency (deposit BTC, earn BTC)</span></li>
+      <li><strong>T+1:</strong> <span class="zh">次日 UTC 00:00 開始計算</span><span class="en-text">Interest starts accruing from the next day at UTC 00:00</span></li>
+      <li><strong><span class="zh">提取邏輯：</span><span class="en-text">Withdrawal priority:</span></strong> <span class="zh">系統優先提取利息，超出部分再從本金扣除</span><span class="en-text">Interest is withdrawn first; principal is deducted only when interest is insufficient</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── SWAP ─── -->
+<section class="section" id="sec-swap">
+  <div class="section-title">⚡ <span class="zh">閃兌</span><span class="en-text">Instant Swap</span></div>
+  <div class="section-desc"><span class="zh">即時資產轉換功能詳解。</span><span class="en-text">Instant in-account asset conversion details.</span></div>
+
+  <div class="info-block">
+    <h3>⚡ <span class="zh">功能特點</span><span class="en-text">Features</span></h3>
+    <ul>
+      <li><span class="zh">帳戶內即時完成資產轉換，無需等待市場撮合</span><span class="en-text">Instant conversion within the account — no order book matching required</span></li>
+      <li><strong><span class="zh">支持：</span><span class="en-text">Supported:</span></strong> BTC, ETH, SOL, USDT, USDC</li>
+      <li><span class="zh">汇率每 10 秒刷新，參考市場實時價格</span><span class="en-text">Rate refreshes every 10 seconds based on real-time market prices</span></li>
+      <li><span class="zh">高流動性幣對價差更小</span><span class="en-text">Higher-liquidity pairs have tighter spreads</span></li>
+      <li><strong><span class="zh">每日 2,000 USDC 免手續費額度</span><span class="en-text">Daily free quota: 2,000 USDC</span></strong></li>
+    </ul>
+  </div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><span><span class="zh">只有現貨帳戶中的資金可用於閃兌。合約帳戶資金需先劃轉至現貨帳戶。</span><span class="en-text">Only funds in the Spot Account can be used for swaps. Transfer from the Futures Account first if needed.</span></span></div>
+
+  <div class="info-block">
+    <h3>🔄 <span class="zh">閃兌 vs 現貨交易</span><span class="en-text">Swap vs Spot Trading</span></h3>
+    <ul>
+      <li><strong><span class="zh">閃兌：</span><span class="en-text">Swap:</span></strong> <span class="zh">平台內部定價引擎，即時轉換，無訂單簿</span><span class="en-text">Internal pricing engine, instant conversion, no order book</span></li>
+      <li><strong><span class="zh">現貨交易：</span><span class="en-text">Spot Trading:</span></strong> <span class="zh">提交買賣單，與其他交易者撮合成交</span><span class="en-text">Submit buy/sell orders, matched with other traders via the order book</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── POINTS ─── -->
+<section class="section" id="sec-points">
+  <div class="section-title">🏆 <span class="zh">積分系統</span><span class="en-text">Points System</span></div>
+  <div class="section-desc"><span class="zh">交易積分、推薦積分、排行榜規則說明。</span><span class="en-text">Trading points, referral points, and leaderboard rules.</span></div>
+
+  <div class="info-block">
+    <h3>📊 <span class="zh">積分計算</span><span class="en-text">Points Calculation</span></h3>
+    <ul>
+      <li><strong><span class="zh">交易積分：</span><span class="en-text">Trading Points:</span></strong> <span class="hl"><span class="zh">手續費 × 100</span><span class="en-text">Fee × 100</span></span> <span class="zh">（USDC 計價，以開倉成交當刻為準）</span><span class="en-text">(USDC-denominated, counted at open order fill)</span></li>
+      <li><strong><span class="zh">推薦積分：</span><span class="en-text">Referral Points:</span></strong> <span class="zh">推薦人獲得被推薦用戶每日積分的 10%，按日計算，僅限直接推薦</span><span class="en-text">Referrer earns 10% of the referred user's daily points. Daily calculation, direct referrals only</span></li>
+      <li><span class="zh">推薦多人時，推薦積分為所有被推薦用戶積分總和的 10%</span><span class="en-text">For multiple referrals, points = 10% of the total combined points of all referred users</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>🎯 <span class="zh">積分獲取方式</span><span class="en-text">How to Earn Points</span></h3>
+    <div class="tag-row">
+      <span class="badge badge-green"><span class="zh">✅ 交易積分</span><span class="en-text">✅ Trading Points</span></span>
+      <span class="badge badge-green"><span class="zh">✅ 邀請人數</span><span class="en-text">✅ Invite Count</span></span>
+      <span class="badge badge-green"><span class="zh">✅ 推薦返佣 10%</span><span class="en-text">✅ Referral 10%</span></span>
+      <span class="badge badge-purple"><span class="zh">🔜 持倉積分</span><span class="en-text">🔜 Position Points</span></span>
+      <span class="badge badge-purple">🔜 KYC Points</span>
+      <span class="badge badge-purple">🔜 Badges</span>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>🏅 <span class="zh">排行榜</span><span class="en-text">Leaderboard</span></h3>
+    <ul>
+      <li><span class="zh">每小時更新，展示前 100 名</span><span class="en-text">Updated hourly, showing top 100</span></li>
+      <li><span class="zh">賽季機制，空投分配與排名直接挂鉤</span><span class="en-text">Season-based — airdrop allocation is directly tied to ranking</span></li>
+      <li><span class="zh">實時反作弊監控</span><span class="en-text">Real-time anti-cheat monitoring</span></li>
+      <li>ROI <span class="zh">排行榜設有防撤資規則</span><span class="en-text">leaderboard has anti-withdrawal rules</span></li>
+    </ul>
+  </div>
+  <div class="alert alert-info"><span class="alert-icon">ℹ️</span><span><span class="zh">積分越高，可解鎖的金庫存款額度越大。排名基於積分，非收益。</span><span class="en-text">Higher points unlock larger Vault deposit limits. Rankings are based on points, not returns.</span></span></div>
+  <div class="alert alert-warn"><span class="alert-icon">⚠️</span><span><span class="zh">積分、MCM 和 MLP 代幣的詳細信息將在後續正式公告中發布，以官方公告為準。</span><span class="en-text">Details on MCM and MLP tokens will be announced officially. All terms are subject to official announcements.</span></span></div>
+</section>
+
+<!-- ─── SAFETY ─── -->
+<section class="section" id="sec-safety">
+  <div class="section-title">🛡️ <span class="zh">安全 / 儲備金</span><span class="en-text">Security & Reserves</span></div>
+  <div class="section-desc"><span class="zh">平台安全機制、資產保護及鏈上驗證方式。</span><span class="en-text">Platform security mechanisms, asset protection, and on-chain verification.</span></div>
+
+  <div class="info-block">
+    <h3>🔗 <span class="zh">鏈上儲備金證明</span><span class="en-text">Proof of Reserves (PoR)</span></h3>
+    <ul>
+      <li><span class="zh">基於默克爾樹技術，部署在 Arbitrum 鏈上</span><span class="en-text">Merkle tree-based, deployed on Arbitrum</span></li>
+      <li><span class="zh">頁面展示：總儲備金 + 用戶資產，比例始終 ≥ 100%</span><span class="en-text">Page shows: Total Reserves + User Assets. Ratio is always ≥ 100%</span></li>
+      <li><strong><span class="zh">驗證步驟：</span><span class="en-text">Verification steps:</span></strong> <span class="zh">登錄 → 點擊「儲備金證明」→ 輸入錢包地址 → 核對金額</span><span class="en-text">Log in → click "Proof of Reserves" → enter wallet address → verify balance</span></li>
+      <li><span class="zh">核心合約地址公示在頁面，複製到</span><span class="en-text">Core contract address is published on the page. Paste into</span> <span class="hl">arbiscan.io</span> <span class="zh">可鏈上查驗</span><span class="en-text">to verify on-chain</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>🏦 <span class="zh">冷熱錢包分離</span><span class="en-text">Cold/Hot Wallet Separation</span></h3>
+    <ul>
+      <li><span class="zh">大部分資產存儲在離線冷錢包</span><span class="en-text">Majority of assets stored in offline cold wallets</span></li>
+      <li><span class="zh">僅日常運營所需留在熱錢包</span><span class="en-text">Only operational amounts kept in hot wallets</span></li>
+      <li><span class="zh">冷錢包採用多重簽名機制，每筆調動需多方授權</span><span class="en-text">Cold wallets use multi-sig — every movement requires multi-party authorization</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── COMPLIANCE ─── -->
+<section class="section" id="sec-compliance">
+  <div class="section-title">⚖️ <span class="zh">合規 / 限制</span><span class="en-text">Compliance & Restrictions</span></div>
+  <div class="section-desc"><span class="zh">監管信息、受限地區、禁止活動。</span><span class="en-text">Regulatory information, restricted regions, and prohibited activities.</span></div>
+
+  <div class="info-block">
+    <h3>🏛️ <span class="zh">監管信息</span><span class="en-text">Regulatory Info</span></h3>
+    <ul>
+      <li><span class="zh">受金融服務管理局（FSA）監管</span><span class="en-text">Regulated by the Financial Services Authority (FSA)</span></li>
+      <li><span class="zh">遵守 KYC 和 AML 標準</span><span class="en-text">Compliant with KYC and AML standards</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block">
+    <h3>🚫 <span class="zh">受限地區</span><span class="en-text">Restricted Regions</span></h3>
+    <div class="tag-row">
+      <span class="badge badge-red">Canada</span><span class="badge badge-red">Cuba</span><span class="badge badge-red">Iran</span><span class="badge badge-red">Iraq</span><span class="badge badge-red">Myanmar</span><span class="badge badge-red">North Korea</span><span class="badge badge-red">Sudan</span><span class="badge badge-red">Syria</span><span class="badge badge-red">Turkey</span><span class="badge badge-red">United States</span>
+    </div>
+  </div>
+
+  <div class="info-block">
+    <h3>❌ <span class="zh">禁止的交易活動</span><span class="en-text">Prohibited Trading Activities</span></h3>
+    <ul>
+      <li>Wash trades</li>
+      <li>Spoofing</li>
+      <li>Layering</li>
+      <li>Insider trading</li>
+      <li><span class="zh">重複或鏡像帳戶套利</span><span class="en-text">Duplicate/mirror account arbitrage</span></li>
+      <li>Latency arbitrage</li>
+      <li><span class="zh">洗錢或恐怖主義融資相關交易</span><span class="en-text">Transactions related to money laundering or terrorist financing</span></li>
+      <li><span class="zh">規避交易限額或風控</span><span class="en-text">Circumventing trading limits or risk controls</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── FAQ ─── -->
+<section class="section" id="sec-faq">
+  <div class="section-title">❓ FAQ</div>
+  <div class="section-desc"><span class="zh">高頻客服問題標準解答，點擊展開查看。</span><span class="en-text">Standard answers to common customer questions. Click to expand.</span></div>
+
+  <h2 class="sub"><span class="zh">存款相關</span><span class="en-text">Deposits</span></h2>
+
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">我可以使用哪些加密貨幣進行存款？</span><span class="en-text">Which cryptocurrencies can I deposit?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">MC Markets 支持使用 BTC、ETH、SOL、USDT 和 USDC 進行充值。</span><span class="en-text">MC Markets supports deposits in BTC, ETH, SOL, USDT, and USDC.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">存款後餘額沒有立即更新？</span><span class="en-text">My balance didn't update after depositing?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">外部充值需要區塊鏈確認時間，請耐心等待。可在區塊鏈瀏覽器查詢 TxHash 追蹤狀態。確認數足夠但仍未到帳，請聯繫 cs@mcmarkets.com 並附上 TxHash。</span><span class="en-text">External deposits require blockchain confirmations — please allow a few minutes. You can track the TxHash on a blockchain explorer. If confirmations are sufficient but funds haven't arrived, email cs@mcmarkets.com with your TxHash.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">轉帳時弄錯了地址，資金可以找回嗎？</span><span class="en-text">I sent to the wrong address — can I recover the funds?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">區塊鏈交易不可逆。轉入錯誤地址的資金無法找回。請在每次轉帳前仔細核對地址，建議先小額測試。</span><span class="en-text">Blockchain transactions are irreversible. Funds sent to a wrong address cannot be recovered. Always double-check the address before sending, and consider a small test transfer first.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">存款的資金會進入哪個帳戶？</span><span class="en-text">Which account do deposits go into?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">存款入帳至現貨帳戶。如需合約交易，再手動劃轉至合約帳戶。</span><span class="en-text">Deposits go into the Spot Account. To trade futures, manually transfer to the Futures Account.</span></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">提款相關</span><span class="en-text">Withdrawals</span></h2>
+
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">我可以從哪個帳戶提現資金？</span><span class="en-text">Which account can I withdraw from?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">提現只能從現貨帳戶進行。如果資金在合約帳戶，需先劃轉至現貨帳戶。</span><span class="en-text">Withdrawals can only be made from the Spot Account. If your funds are in the Futures Account, transfer them to Spot first.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">白名單地址會過期嗎？</span><span class="en-text">Do whitelist addresses expire?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">會。每個白名單地址都有有效期，過期後自動刪除。</span><span class="en-text">Yes. Each whitelisted address has an expiry date and is automatically removed when it expires.</span></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">交易相關</span><span class="en-text">Trading</span></h2>
+
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">交易加密貨幣需要完成 KYC 嗎？</span><span class="en-text">Is KYC required to trade crypto?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">不需要。現貨和合約均無需 KYC。RWA 類標的（外匯、黃金、指數等）需完成 L0 基礎認證。</span><span class="en-text">No. Both spot and futures crypto trading require no KYC. RWA instruments (forex, gold, indices, etc.) require L0 basic verification.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">為什麼我的訂單沒有在期望的價格成交？</span><span class="en-text">Why didn't my order fill at my expected price?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">成交價格由一口價（Quote）決定，已計入根據訂單大小動態計算的影響成本（Impact Cost）。您可以在成交回報中查看成交均價與影響成本。</span><span class="en-text">Fill prices are based on the Quote, which includes a dynamically calculated Impact Cost based on order size. You can review the fill price and impact cost in the trade confirmation.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">最新成交價到了，但止損/止盈單沒有觸發？</span><span class="en-text">The last price hit my level but my SL/TP didn't trigger?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">止損/止盈單觸發基於標記價格（Mark Price），非單筆最新成交價（Last Price）。標記價是多源加權平滑生成的公允價格，能有效防止瞬間異常波動導致的錯誤觸發。</span><span class="en-text">SL/TP orders trigger based on Mark Price, not the Last Traded Price. Mark Price is a fair aggregated price from multiple sources, which prevents accidental triggers from momentary price spikes.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">我的訂單被拒絕了怎麼辦？</span><span class="en-text">My order was rejected — what should I check?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">常見原因：餘額不足、滑點設置過小、限價偏離最優價過大（做多時限價不能低於最優賣價，做空時不能高於最優買價）。檢查後重試。問題持續請聯繫 cs@mcmarkets.com 並附上訂單 ID。</span><span class="en-text">Common reasons: insufficient balance, slippage set too low, or limit price too far from best price (longs: limit can't be below best ask; shorts: limit can't be above best bid). Check and retry. If the issue persists, contact cs@mcmarkets.com with your Order ID.</span></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">金庫 / Earn</span><span class="en-text">Vault / Earn</span></h2>
+
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">金庫和賺取（Earn）有什麼區別？</span><span class="en-text">What's the difference between Vault and Earn?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">Earn 是活期理財，支持 5 種資產，無鎖定期，本金不受影響，風險較低。Vault 是為平台提供流動性，僅支持 USDC，鎖定期 4 天，收益可能更高，但本金存在風險。</span><span class="en-text">Earn is a flexible savings product supporting 5 assets, no lock-up, and no principal risk — lower risk. Vault provides liquidity to the platform, supports USDC only, has a 4-day lock-up, offers potentially higher yields, but your principal is at risk.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">Earn 的利息用什麼幣種發放？</span><span class="en-text">What currency is Earn interest paid in?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">利息以存入的原幣種結算和發放。存入 BTC，賺取的利息也是 BTC。頁面上的 USDC 價值僅作估值參考。</span><span class="en-text">Interest is paid in the same currency you deposited. Deposit BTC, earn interest in BTC. The USDC value shown on the page is for reference only.</span></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">安全相關</span><span class="en-text">Security</span></h2>
+
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">修改安全設置後為什麼不能提現？</span><span class="en-text">Why can't I withdraw after changing security settings?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">資金密碼、谷歌驗證器、郵箱綁定等變更後均觸發 24 小時提現鎖定，保護資產安全。</span><span class="en-text">Changes to the fund password, Google Authenticator, or bound email trigger a 24-hour withdrawal lock as a security measure.</span></div>
+  </div>
+  <div class="faq-item" onclick="toggleFaq(this)">
+    <div class="faq-q"><span class="zh">2FA 驗證碼無法使用怎麼辦？</span><span class="en-text">My 2FA code isn't working — what can I do?</span><span class="faq-toggle">+</span></div>
+    <div class="faq-a"><span class="zh">使用綁定時保存的恢復碼登錄。恢復碼用完請聯繫 cs@mcmarkets.com。</span><span class="en-text">Use the recovery codes you saved when setting up 2FA. If all recovery codes are exhausted, contact cs@mcmarkets.com.</span></div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section class="section" id="sec-contact">
+  <div class="section-title">📞 <span class="zh">聯繫方式</span><span class="en-text">Contact</span></div>
+  <div class="section-desc"><span class="zh">所有官方聯繫渠道及回覆時限。</span><span class="en-text">All official contact channels and response time SLAs.</span></div>
+
+  <div class="alert alert-danger"><span class="alert-icon">⏰</span><span><strong><span class="zh">緊急問題（資金安全）：4 小時內回覆。一般問題：24 小時內回覆。</span><span class="en-text">Urgent issues (fund safety): reply within 4 hours. General inquiries: within 24 hours.</span></strong></span></div>
+
+  <h2 class="sub">Email</h2>
+  <div class="contact-grid">
+    <div class="contact-item"><div class="contact-label"><span class="zh">客服</span><span class="en-text">Support</span></div><div class="contact-value">cs@mcmarkets.com</div></div>
+    <div class="contact-item"><div class="contact-label"><span class="zh">商務</span><span class="en-text">Business</span></div><div class="contact-value">business@mcmarkets.com</div></div>
+    <div class="contact-item"><div class="contact-label"><span class="zh">媒體</span><span class="en-text">Press</span></div><div class="contact-value">press@mcmarkets.com</div></div>
+    <div class="contact-item"><div class="contact-label"><span class="zh">技術</span><span class="en-text">Tech</span></div><div class="contact-value">tech@mcmarkets.com</div></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">社群</span><span class="en-text">Community</span></h2>
+  <div class="contact-grid">
+    <div class="contact-item"><div class="contact-label">Twitter / X</div><div class="contact-value">@mcmarketsglobal</div></div>
+    <div class="contact-item"><div class="contact-label">Telegram</div><div class="contact-value">t.me/mcmarketsglobal</div></div>
+    <div class="contact-item"><div class="contact-label">Discord</div><div class="contact-value">discord.com/invite/4aUHX8AHpU</div></div>
+    <div class="contact-item"><div class="contact-label">Blog</div><div class="contact-value">mcmarkets.com/en/blog</div></div>
+    <div class="contact-item"><div class="contact-label">InfoHub</div><div class="contact-value">mc-markets.gitbook.io</div></div>
+    <div class="contact-item"><div class="contact-label"><span class="zh">系統狀態</span><span class="en-text">System Status</span></div><div class="contact-value">mcmarkets.statuspage.io</div></div>
+  </div>
+
+  <h2 class="sub"><span class="zh">提交工單所需信息</span><span class="en-text">Ticket Submission Requirements</span></h2>
+  <div class="info-block">
+    <h3>📋 <span class="zh">必填信息</span><span class="en-text">Required Information</span></h3>
+    <ul>
+      <li><span class="zh">注冊帳戶名或帳戶地址（錢包地址）</span><span class="en-text">Registered account name or wallet address</span></li>
+      <li><span class="zh">交易哈希 TxHash — 鏈上交易相關問題</span><span class="en-text">Transaction Hash (TxHash) — for on-chain transaction issues</span></li>
+      <li><span class="zh">訂單 ID — 特定交易訂單相關問題</span><span class="en-text">Order ID — for specific order issues</span></li>
+      <li><span class="zh">詳細描述 + 截圖或錄屏</span><span class="en-text">Detailed description + screenshots or screen recording</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─── ROADMAP ─── -->
+<section class="section" id="sec-roadmap">
+  <div class="section-title">🗺️ Roadmap</div>
+  <div class="section-desc"><span class="zh">MC Markets 分階段發展計劃。</span><span class="en-text">MC Markets phased development plan.</span></div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🚀</div>
+      <div class="card-title">Phase 1 — <span class="zh">啟動與基礎建設</span><span class="en-text">Launch & Foundation</span></div>
+      <div class="card-body">
+        <ul style="list-style:none;color:var(--text2);font-size:13px;line-height:2">
+          <li>✅ <span class="zh">鏈上基礎設施部署</span><span class="en-text">On-chain infrastructure deployment</span></li>
+          <li>✅ <span class="zh">白皮書發布</span><span class="en-text">Whitepaper release</span></li>
+          <li>✅ <span class="zh">積分系統上線</span><span class="en-text">Points system launch</span></li>
+          <li>✅ <span class="zh">社區建設</span><span class="en-text">Community building</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Phase 2 — <span class="zh">擴展與賦能</span><span class="en-text">Expansion & Empowerment</span></div>
+      <div class="card-body">
+        <ul style="list-style:none;color:var(--text2);font-size:13px;line-height:2">
+          <li>🔄 <span class="zh">交易競賽</span><span class="en-text">Trading competitions</span></li>
+          <li>🔄 MCM <span class="zh">質押 + 費用折扣</span><span class="en-text">staking + fee discounts</span></li>
+          <li>🔄 <span class="zh">多鏈擴展（ETH、BNB Chain）</span><span class="en-text">Multi-chain (ETH, BNB Chain)</span></li>
+          <li>🔄 LP <span class="zh">激勵</span><span class="en-text">incentives</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <div class="card-title">Phase 3 — <span class="zh">生態與創新</span><span class="en-text">Ecosystem & Innovation</span></div>
+      <div class="card-body">
+        <ul style="list-style:none;color:var(--text2);font-size:13px;line-height:2">
+          <li>📌 <span class="zh">社交交易</span><span class="en-text">Social trading</span></li>
+          <li>📌 MCM <span class="zh">治理投票</span><span class="en-text">governance voting</span></li>
+          <li>📌 TRON + <span class="zh">其他高性能鏈</span><span class="en-text">other high-perf chains</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏛️</div>
+      <div class="card-title">Phase 4 — <span class="zh">去中心化與金融融合</span><span class="en-text">Decentralization & Finance</span></div>
+      <div class="card-body">
+        <ul style="list-style:none;color:var(--text2);font-size:13px;line-height:2">
+          <li>📌 MCM <span class="zh">借貸抵押</span><span class="en-text">lending collateral</span></li>
+          <li>📌 <span class="zh">期權與結構化產品</span><span class="en-text">Options & structured products</span></li>
+          <li>📌 <span class="zh">跨鏈優化</span><span class="en-text">Cross-chain optimization</span></li>
+          <li>📌 <span class="zh">機構服務</span><span class="en-text">Institutional services</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div><!-- end layout -->
+
+<script>
+// ── LANGUAGE ──
+function setLang(lang) {
+  document.body.className = lang === 'en' ? 'en' : '';
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  const inp = document.getElementById('searchInput');
+  inp.placeholder = lang === 'en' ? 'Search keywords...' : '搜尋關鍵字...';
+  localStorage.setItem('mcm-lang', lang);
+}
+
+// ── NAV ──
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) { sec.classList.add('active'); window.scrollTo(0, 0); }
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (event && event.currentTarget) event.currentTarget.classList.add('active');
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+// ── FAQ ──
+function toggleFaq(el) { el.classList.toggle('open'); }
+
+// ── MOBILE NAV ──
+function toggleNav() { document.getElementById('sidebar').classList.toggle('open'); }
+
+// ── SEARCH ──
+function doSearch(val) {
+  val = val.trim().toLowerCase();
+  if (!val) {
+    document.querySelectorAll('.section').forEach(s => { s.style.display = ''; s.classList.remove('active'); });
+    document.getElementById('sec-home').classList.add('active');
+    return;
+  }
+  let firstMatch = null;
+  document.querySelectorAll('.section').forEach(sec => {
+    const text = sec.innerText.toLowerCase();
+    if (text.includes(val)) {
+      sec.classList.add('active');
+      if (!firstMatch) firstMatch = sec;
+    } else {
+      sec.classList.remove('active');
+    }
+  });
+  if (firstMatch) {
+    document.querySelectorAll('.section').forEach(s => { if (s !== firstMatch) s.classList.remove('active'); });
+    document.querySelectorAll('.faq-item').forEach(item => {
+      if (item.innerText.toLowerCase().includes(val)) item.classList.add('open');
+    });
+    window.scrollTo(0, 0);
+  }
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('mcm-lang') || 'zh';
+  setLang(saved);
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+</script>
+</body>
+</html>
